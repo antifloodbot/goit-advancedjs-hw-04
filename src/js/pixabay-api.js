@@ -1,29 +1,30 @@
+import axios from 'axios';
+
 const BASE_URL = 'https://pixabay.com/api/';
 const API_KEY = '53246584-28feabd4215ec3afc796f885c';
+
+export const PER_PAGE = 15;
 
 const DEFAULT_PARAMS = {
   image_type: 'photo',
   orientation: 'horizontal',
   safesearch: 'true',
-  per_page: 40,
+  per_page: PER_PAGE,
 };
 
 export async function fetchImages(query, page = 1) {
-  const searchParams = new URLSearchParams({
+  const params = {
     key: API_KEY,
     q: query,
     page,
     ...DEFAULT_PARAMS,
-  });
+  };
 
-  const url = `${BASE_URL}?${searchParams.toString()}`;
+  const response = await axios.get(BASE_URL, { params });
 
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    throw new Error(`HTTP error: ${response.status}`);
+  if (!response.data) {
+    throw new Error('Empty response from API');
   }
 
-  const data = await response.json();
-  return data;
+  return response.data;
 }
